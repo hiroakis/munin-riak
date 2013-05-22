@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+
+"""
+=head1 NAME
+
+riak_erlang_memory - Plugin to monitor the Erlang memory usage.
+
+=head1 AUTHOR
+
+Hiroaki Sano
+
+=head1 CONFIGURATION
+
+No configuration
+
+=head1 LICENSE
+
+MIT License
+
+=cut
+"""
+
+import sys
+import requests
+
+def autoconf():
+    pass
+
+def get_stats():
+    r = requests.get('http://127.0.0.1:8098/stats')
+    return r.json()
+
+def config():
+    print ('graph_title Erlang memory')
+    print ('graph_args --base 1000 -l 0')
+    print ('graph_vlabel Bytes')
+    print ('graph_category Riak')
+    print ('graph_period second')
+    print ('graph_info This graph shows the Erlang memory usage')
+
+    print ('erlang_memory_processes_used.label Erlang memory usage')
+    print ('erlang_memory_processes_used.type GAUGE')
+    print ('erlang_memory_processes_used.min 0')
+    print ('erlang_memory_processes_used.info Erlang memory usage')
+
+    print ('mem_total.label System memory')
+    print ('mem_total.type GAUGE')
+    print ('mem_total.min 0')
+    print ('mem_total.info System memory')
+
+def main():
+    if len(sys.argv) > 1:
+        command = sys.argv[1]
+    else:
+        command = ''
+
+    if command == 'autoconf':
+        autoconf()
+    elif command == 'config':
+        config()
+    else:
+        ret = get_stats()
+        print ('erlang_memory_processes_used.value %s') % ret['memory_processes_used']
+        print ('mem_total.value %s') % ret['mem_total']
+
+if __name__ == '__main__':
+    main()
