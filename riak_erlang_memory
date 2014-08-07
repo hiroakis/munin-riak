@@ -23,12 +23,17 @@ MIT License
 
 import sys
 import requests
+import os
+
+host = os.getenv('riak_host','127.0.0.1')
+port = os.getenv('riak_port',8098)
+path = os.getenv('riak_path','stats')
 
 def autoconf():
     pass
 
 def get_stats():
-    r = requests.get('http://127.0.0.1:8098/stats')
+    r = requests.get("http://{}:{}/{}".format(host,port,path))
     return r.json()
 
 def config():
